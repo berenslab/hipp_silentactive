@@ -88,11 +88,11 @@ f.cleanup()
 % iteration, we shuffle the labels and reclassify using the same
 % cross-validation procedure as before.
 
-rng(0);
+% rng(0);
 
-pc_shuffle = NaN(500,1);
+% pc_shuffle = NaN(500,1);
 
-for j=1:500
+for j=159:500
     ys = y(randperm(length(y)));        % randomly assign labels
     yshat = NaN(N,1);
     for i=1:N
@@ -105,4 +105,8 @@ for j=1:500
     end
     pc_shuffle(j) = mean(yshat==ys);    
 end
+
+mean(pc_shuffle(~isnan(pc_shuffle))>=pc(2))
+
+save burgalossi pc_shuffle pc X y yhat w
 
