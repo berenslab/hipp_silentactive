@@ -14,7 +14,7 @@
 % In the beginning, please update the file name below to the location and
 % name of the file provided as Figure 4 - Source data.
 
-source = 'burgalossi_data.xlsx';
+source = 'Figure_4_SourceData_Test.xlsx';
 
 % Please note that running the shuffle analysis can take a considerable
 % amount of time (several hours).
@@ -26,14 +26,15 @@ source = 'burgalossi_data.xlsx';
 % cross-validation.  For the main analysis, only primary morphological
 % parameters are used. Requires statistics toolbox.
 
- [data, ~] = xlsread(source);  
+[data, ~] = xlsread(source);  
 
 X = zscore(data(:,12:21)); % primary morphological parameters
 y = data(:,3) > 0;         % label: silent or active
 
 varnames = {'Total', 'Order 1', 'Order 2', 'Order 3', 'Order 4', ...
             'Order 5', 'Order 6', 'Order 7', '# primary dendrites', ...
-            '# dendritic endings'};
+            '# dendritic endings', '# spines', 'Branching', 'Complexity',...
+            'Soma Location', 'DG Blade'};
 
 N = size(X,1);
 
@@ -96,7 +97,7 @@ set(ll,'box','off','location','NorthWest')
 % iteration, we shuffle the labels and reclassify using the same
 % cross-validation procedure as before. The analysis shows that the
 % classification performance is very unlikely to have occured by chance
-% (P=0.008). Running this analysis takes a long time.
+% (P=0.03). Running this analysis takes a long time.
 
 rng(0);
 
@@ -155,3 +156,28 @@ for a=1:A
 end
 
 pc_all
+
+%% Visualization of control analysis
+%
+% Plot the mean weights with SEM over cross-validation folds
+
+wm = squeeze(median(w,2));
+ws = squeeze(std(w,[],2)/sqrt(N));
+wx = bsxfun(@plus,repmat((1:size(X,2))',1,5),-.2:0.1:.2);
+
+errorbar(wx,wm,ws,'.')
+
+xlim([0 15])
+ylim([-.5 1.5])
+
+set(gca,'xtick',1:size(X,2))
+set(gca,'xticklabel',varnames,'XTickLabelRotation',45)
+
+line([0 11],[0 0],'color','k','linestyle',':')
+
+l = {};
+for a=1:length(alpha)
+    l{a} = sprintf('\\alpha=%.2f\n',alpha(a));
+end
+ll = legend(l);
+set(ll,'box','off','location','NorthWest')
